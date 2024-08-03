@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - Assignment for Quadiro Technologies</title>
+  <link rel="stylesheet" href="userstyle.css">
+</head>
+<body>
+  <div class="container">
+    <h1>User Dashboard</h1>
+    <h3>Cars List</h3>
+    <table id="carsTable">
+      <thead>
+        <tr>
+          <th>Car Name</th>
+          <th>Manufacturing Year</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login.html';
+    }
+
+    async function loadCars() {
+      const response = await fetch('/api/cars', {
+        headers: {
+          'Authorization': token,
+        },
+      });
+
+      const cars = await response.json();
+      const carsTableBody = document.querySelector('#carsTable tbody');
+      carsTableBody.innerHTML = '';
+
+      cars.forEach(car => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${car.name}</td>
+          <td>${car.year}</td>
+          <td>$${car.price}</td>
+        `;
+        carsTableBody.appendChild(row);
+      });
+    }
+
+    loadCars();
+  </script>
+</body>
+</html>

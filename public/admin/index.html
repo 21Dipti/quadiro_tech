@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Assignment for Quadiro Technologies</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+    <form id="carForm" class="form-container">
+      <div class="form-group">
+        <label for="name">Car Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="year">Manufacturing Year:</label>
+        <input type="number" id="year" name="year" required>
+      </div>
+      <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required>
+      </div>
+      <button type="submit">Add Car</button>
+    </form>
+    <h3>Cars List</h3>
+    <table id="carsTable">
+      <thead>
+        <tr>
+          <th>Car Name</th>
+          <th>Manufacturing Year</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login.html';
+    }
+
+    document.getElementById('carForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const year = document.getElementById('year').value;
+      const price = document.getElementById('price').value;
+
+      const response = await fetch('/api/cars', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token,
+        },
+        body: JSON.stringify({ name, year, price }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert('Car added successfully');
+        loadCars();
+      } else {
+        alert(data.message);
+      }
+    });
+
+    async function loadCars() {
+      const response = await fetch('/api/cars', {
+        headers: {
+          'Authorization': token,
+        },
+      });
+
+      const cars = await response.json();
+      const carsTableBody = document.querySelector('#carsTable tbody');
+      carsTableBody.innerHTML = '';
+
+      cars.forEach(car => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${car.name}</td>
+          <td>${car.year}</td>
+          <td>$${car.price}</td>
+        `;
+        carsTableBody.appendChild(row);
+      });
+    }
+
+    loadCars();
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Assignment for Quadiro Technologies</title>
+  <link rel="stylesheet" href="loginstyle.css">
+</head>
+
+<body>
+  <div class="container">
+    <button class="signup-btn" onclick="window.location.href='/signup.html'">Signup</button>
+    <h1>Assignment for Quadiro Technologies</h1>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Login successful');
+        localStorage.setItem('token', data.token);
+        if (data.role === 'admin') {
+          window.location.href = '/admin/index.html';
+        } else {
+          window.location.href = '/user/index.html';
+        }
+      } else {
+        alert(data.message);
+      }
+    });
+  </script>
+</body>
+
+</html>
