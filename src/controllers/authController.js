@@ -5,7 +5,9 @@ const User = require('../models/userModel');
 // Registration function
 const register = async (req, res) => {
   const { username, password, role } = req.body;
-
+  const alluser = await User.find();
+  console.log(alluser);
+  console.log()
   try {
     const existingUser = await User.findOne({ username });
     if (existingUser) {
